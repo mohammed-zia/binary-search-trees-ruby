@@ -189,6 +189,66 @@ class Tree
     blk.call(root.data)
   end
 
+  def findTreeHeight(root, data)
+    $height
+ 
+    # Base Case
+    if root == nil
+        return -1
+    end
+    # Store the maximum height of
+    # the left and right subtree
+    leftHeight = findTreeHeight(root.left, data)
+ 
+    rightHeight = findTreeHeight(root.right, data)
+ 
+    # Update height of the current node
+    ans = [leftHeight, rightHeight].max + 1
+ 
+    # If current node is the required node
+    if root.data == data
+        $height = ans
+    end
+    return ans
+  end
+ 
+# Function to find the height of
+# a given node in a Binary Tree
+  def findNodeHeight(root, data)
+    $height
+ 
+    # Stores height of the Tree
+    maxHeight = findTreeHeight(root, data)
+ 
+    # Return the height
+    return $height
+  end
+
+
+  def depth(root, data)
+    if root == nil
+      return -1
+    end
+
+    # Set initial depth to -1
+    depth = -1
+
+    if root.data == data
+      return depth + 1
+    end
+
+    depth = depth(root.left, data)
+    if depth >= 0
+      return depth + 1
+    end
+    depth = depth(root.right, data)
+    if depth >= 0
+      return depth + 1
+    end
+    return depth
+  end
+
+
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
@@ -205,6 +265,8 @@ tree.pretty_print
 # tree.level_order(tree.root) {|x| p x}
 # tree.preorder(tree.root) {|x| p x}
 # tree.inorder(tree.root) {|x| p x}
-tree.postorder(tree.root) {|x| p x}
-
+# tree.postorder(tree.root) {|x| p x}
+p tree.depth(tree.root, 14)
+tree.insert(tree.root, 20)
+p tree.depth(tree.root, 20)
 
