@@ -63,14 +63,20 @@ class Tree
 
 
   def delete(root, data)
+    # Base case
     if root.nil?
       return root
     else
+      # If the data to be deleted is smaller than the root's key
+      # then it lies in the left sub-tree
       if root.data > data 
-        delete(root.left, data)
+        root.left = delete(root.left, data)
+      # Elsif reverse is true it must lie in the right sub-tree
       elsif root.data < data
-        delete(root.right, data)
+        root.right = delete(root.right, data)
+      # Else it must be the node to be deleted
       else
+        # Node with only one child or no child
         if root.left == nil
           temp = root.right
           root.data = nil
@@ -83,10 +89,15 @@ class Tree
           return temp
         end
 
+        # Node with two children:
+        # Get the inorder successor
+        # (smallest in the right subtree)
         temp = minValueNode(root.right)
-
+        
+        # Copy the inorder successor's content to this node
         root.data = temp.data
 
+        # Delete the inorder successor
         root.right = delete(root.right, temp.data)
       end
     end
@@ -103,8 +114,49 @@ class Tree
     find(root.left, data)
   end
 
+  def level_order(root, &blk)
+    # Need to traverse the BST breadth-first
 
+    # Implement a queue to hold discovered node addresses whilst the children are visited to allow us to keep track
+    # of our place in the tree (can't just go backwards)
 
+    # As long as the tree has some discovered node (i.e. the tree is not empty) we can take out a node from the front of the queue,
+    # visit it and then en-queue its children
+    
+    #       QUEUE
+    # ---------------------
+    # <- RootNodeAddr <-
+    # ---------------------
+    # >> Visit RootNode
+    # ----------------------------
+    # <- ChildNode1 <- ChildNode2
+    # ----------------------------
+    # >> Visit ChildNode1 and enqueue it's children, then move to ChildNode2 and so on....
+    
+    # FUNCTION START
+    # If the root node is nil (i.e. empty) then just return
+    if root.nil?
+      return
+    end
+    queue = []
+    queue.push(root)
+    # While there is at least one discovered node
+    while queue.empty? == false
+      # Set the current node to the node at the front of the queue
+      current_node = queue.first
+      blk.call(current_node.data)
+      # If the current node's left child is not nil, push it to the queue
+      if current_node.left.nil? == false
+        queue.push(current_node.left)
+      end
+      # If the current node's right child is not nil, push it to the queue
+      if current_node.right.nil? == false
+        queue.push(current_node.right)
+      end
+      # Remove the first element from the queue
+      queue.shift
+    end
+  end
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
@@ -113,17 +165,9 @@ class Tree
 
 end
 
-tree = Tree.new([4,7,6,1,3,8,10,14,13])
-tree.pretty_print
-tree.insert(tree.root, 15)
-tree.pretty_print
-tree.delete(tree.root, 1)
-tree.pretty_print
-tree.delete(tree.root, 4)
-tree.pretty_print
-tree.delete(tree.root, 13)
-tree.pretty_print
-tree.delete(tree.root, 15)
+tree = Tree.new([4,7,6,3,10,14,13])
 tree.pretty_print
 
-puts tree.find(tree.root, 6)
+# tree = Tree.new(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"])
+# tree.pretty_print
+# tree.level_order(tree.root) {|x| p x}
