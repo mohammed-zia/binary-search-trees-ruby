@@ -157,6 +157,38 @@ class Tree
       queue.shift
     end
   end
+
+  def preorder(root, &blk)
+    # We'll implement the preorder traversal recursively.
+    # Base case
+    if root.nil? 
+      return
+    end
+    # First, we yield the root node to the block
+    blk.call(root.data)
+    # Then we'll recursively call the function, passing the left child Node as an argument
+    preorder(root.left, &blk)
+    preorder(root.right, &blk)
+  end
+
+  def inorder(root, &blk)
+    if root.nil?
+      return
+    end
+    inorder(root.left, &blk)
+    blk.call(root.data)
+    inorder(root.right, &blk)
+  end
+
+  def postorder(root, &blk)
+    if root.nil?
+      return
+    end
+    postorder(root.left, &blk)
+    postorder(root.right, &blk)
+    blk.call(root.data)
+  end
+
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
@@ -171,3 +203,8 @@ tree.pretty_print
 # tree = Tree.new(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"])
 # tree.pretty_print
 # tree.level_order(tree.root) {|x| p x}
+# tree.preorder(tree.root) {|x| p x}
+# tree.inorder(tree.root) {|x| p x}
+tree.postorder(tree.root) {|x| p x}
+
+
