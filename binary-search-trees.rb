@@ -18,7 +18,7 @@ class Tree
   def build_tree(array)
     if array.is_a?(Array)
       unless array.empty?
-        p array
+        # p array
         mid_point = (array.size) / 2
         # puts mid_point
         root = Node.new(array[mid_point])
@@ -224,7 +224,6 @@ class Tree
     return $height
   end
 
-
   def depth(root, data)
     if root == nil
       return -1
@@ -248,25 +247,122 @@ class Tree
     return depth
   end
 
+  def height(root)
+    # base condition when binary tree is empty
+    if root.nil? == true
+        return 0
+    end
+    return [height(root.left), height(root.right)].max + 1
+  end
 
+  def balanced?(root)
+    if root.nil? == true
+      return true
+    end
+    left_height = height(root.left)
+    right_height = height(root.right)
+
+    if (left_height - right_height).abs <= 1 && balanced?(root.left) == true && balanced?(root.right) == true
+      return true
+    end
+
+    return false
+  end
+  
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
     pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
-  end
-
+  end  
 end
 
-tree = Tree.new([4,7,6,3,10,14,13])
+def rebalance(tree)
+  # This function rebalances an unbalanced tree by using a depth-first inorder traversal 
+  # which will return the elements in a sorted array. This new array is then passed to the 
+  # build_tree function to create the new balanced tree.
+  new_array = []
+  tree.inorder(tree.root) {|x| new_array << x}
+  # p new_array
+  Tree.new(new_array)
+end
+
+# DRIVER SCRIPT
+
+# Create a binary search tree from an array of random numbers
+tree = Tree.new(Array.new(15) { rand(1..100) })
 tree.pretty_print
 
-# tree = Tree.new(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"])
-# tree.pretty_print
-# tree.level_order(tree.root) {|x| p x}
-# tree.preorder(tree.root) {|x| p x}
-# tree.inorder(tree.root) {|x| p x}
-# tree.postorder(tree.root) {|x| p x}
-p tree.depth(tree.root, 14)
-tree.insert(tree.root, 20)
-p tree.depth(tree.root, 20)
+# Confirm that the tree is balanced by calling #balanced?
+puts "Tree balanced -> #{tree.balanced?(tree.root)}"
+
+# Print all the elements in level, pre, post and inorder
+level_ord = []
+tree.level_order(tree.root) {|x| level_ord << x}
+puts "Level Order: #{level_ord}"
+puts "\n"
+
+pre_ord = []
+tree.preorder(tree.root) {|x| pre_ord << x}
+puts "Preorder: #{pre_ord}"
+puts "\n"
+
+inord = []
+tree.inorder(tree.root) {|x| inord << x}
+puts "Inorder: #{inord}"
+puts "\n"
+
+postord = []
+tree.postorder(tree.root) {|x| postord << x}
+puts "Postorder: #{postord}"
+puts "\n"
+
+# Unbalance the tree by adding several numbers > 100
+tree.insert(tree.root, 110)
+tree.insert(tree.root, 155)
+tree.insert(tree.root, 134)
+tree.insert(tree.root, 197)
+tree.insert(tree.root, 175)
+tree.insert(tree.root, 132)
+tree.insert(tree.root, 162)
+tree.insert(tree.root, 123)
+puts "\n"
+puts "\n"
+puts "New tree:"
+puts "\n"
+tree.pretty_print
+
+# Confirm the tree is now unbalanced
+puts "\n"
+puts "Tree balanced -> #{tree.balanced?(tree.root)}"
+puts "\n"
+
+# Balance the tree by calling rebalance
+new_tree = rebalance(tree)
+new_tree.pretty_print
+
+# Confirm the tree is now rebalanced
+puts "\n"
+puts "Tree balanced -> #{new_tree.balanced?(new_tree.root)}"
+puts "\n"
+
+# Print all the elements in level, pre, post and inorder
+level_ord = []
+new_tree.level_order(new_tree.root) {|x| level_ord << x}
+puts "Level Order: #{level_ord}"
+puts "\n"
+
+pre_ord = []
+new_tree.preorder(new_tree.root) {|x| pre_ord << x}
+puts "Preorder: #{pre_ord}"
+puts "\n"
+
+inord = []
+new_tree.inorder(new_tree.root) {|x| inord << x}
+puts "Inorder: #{inord}"
+puts "\n"
+
+postord = []
+new_tree.postorder(new_tree.root) {|x| postord << x}
+puts "Postorder: #{postord}"
+puts "\n"
 
